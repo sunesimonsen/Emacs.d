@@ -45,11 +45,6 @@
 (color-theme-initialize)
 (color-theme-billw)
 
-;;; Font
-(set-default-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
-
-(setq browse-url-generic-program (executable-find "chromium-browser")
-      browse-url-browser-function 'browse-url-generic)
 (put 'narrow-to-region 'disabled nil)
 
 ;;; Smart beginning of line
