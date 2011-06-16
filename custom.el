@@ -36,6 +36,11 @@
   (package-initialize))
 
 
+;;; Scrolling
+(setq scroll-margin 4)
+(setq scroll-step 1)
+
+
 ;;; Drag stuff
 (require 'drag-stuff)
 (drag-stuff-global-mode t)
@@ -75,7 +80,11 @@ If point was already at that position, move point to beginning of line."
 (setq auto-mode-alist
       (cons '("\\.\\(markdown\\|md\\)" . markdown-mode) auto-mode-alist))
 
-;;; Alternative yas expand
+;;; YASnippet
+(setq yas/root-directory "~/.emacs.d/snippets")
+(yas/load-directory yas/root-directory)
+(yas/global-mode t)
+;; Alternative yas expand
 (global-set-key (kbd "M-b") 'yas/expand)
 
 ;;; Git grep 
@@ -123,3 +132,53 @@ Then move to that line and indent accordning to mode"
 
 (global-set-key (kbd "M-o") 'open-line-above)
 (global-set-key (kbd "C-o") 'open-line-below)
+
+;;; Scala
+
+(add-to-list 'load-path "~/.emacs.d/scala") 
+
+(require 'scala-mode-auto)
+
+;;; ETags
+(defun ido-find-file-in-tag-files ()
+  (interactive)
+  (save-excursion
+    (let ((enable-recursive-minibuffers t)) (visit-tags-table-buffer))
+    (find-file (expand-file-name
+		(ido-completing-read "Project file: "
+				     (tags-table-files) nil t)))))
+
+(defvar af-ido-flex-fuzzy-limit (* 2000 5))
+(defadvice ido-set-matches-1 (around my-ido-set-matches-1 activate)
+  "Conditionally disable flex matching if the list is huge.
+
+This is useful because when the ido list is huge, ido flex matching
+spends an eternity in a regex if you make a typo."
+  (let ((ido-enable-flex-matching (< (* (length (ad-get-arg 0)) (length ido-text))
+                                     af-ido-flex-fuzzy-limit)))
+    ad-do-it))
+
+(global-set-key (kbd "C-x p") 'ido-find-file-in-tag-files)
+
+;;; isearch-word
+(require 'thingatpt)
+
+(defun custom-isearch-yank-word-or-char-from-beginning ()
+  "Move to beginning of word before yanking word in isearch-mode."
+  (interactive)
+  ;; Making this work after a search string is entered by user
+  ;; is too hard to do, so work only when search string is empty.
+  (if (= 0 (length isearch-string))
+      (beginning-of-thing 'word))
+  (isearch-yank-word-or-char)
+  ;; Revert to 'isearch-yank-word-or-char for subsequent calls
+  (substitute-key-definition 'custom-isearch-yank-word-or-char-from-beginning 
+			     'isearch-yank-word-or-char
+			     isearch-mode-map))
+
+(add-hook 'isearch-mode-hook
+ (lambda ()
+   "Activate my customized Isearch word yank command."
+   (substitute-key-definition 'isearch-yank-word-or-char 
+			      'custom-isearch-yank-word-or-char-from-beginning
+			      isearch-mode-map)))
