@@ -123,3 +123,6 @@ Then move to that line and indent accordning to mode"
 
 (global-set-key (kbd "M-o") 'open-line-above)
 (global-set-key (kbd "C-o") 'open-line-below)
+
+;;; Join 
+(global-set-key (kbd "C-x C-j") 'join-line)
