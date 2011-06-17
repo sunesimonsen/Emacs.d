@@ -157,25 +157,25 @@ spends an eternity in a regex if you make a typo."
 
 (global-set-key (kbd "C-x p") 'ido-find-file-in-tag-files)
 
-;;; isearch-word
-(require 'thingatpt)
+;;;; isearch-forward-at-point
+(defvar isearch-initial-string nil)
 
-(defun custom-isearch-yank-word-or-char-from-beginning ()
-  "Move to beginning of word before yanking word in isearch-mode."
-  (interactive)
-  ;; Making this work after a search string is entered by user
-  ;; is too hard to do, so work only when search string is empty.
-  (if (= 0 (length isearch-string))
-      (beginning-of-thing 'word))
-  (isearch-yank-word-or-char)
-  ;; Revert to 'isearch-yank-word-or-char for subsequent calls
-  (substitute-key-definition 'custom-isearch-yank-word-or-char-from-beginning 
-			     'isearch-yank-word-or-char
-			     isearch-mode-map))
+(defun isearch-set-initial-string ()
+  (remove-hook 'isearch-mode-hook 'isearch-set-initial-string)
+  (setq isearch-string isearch-initial-string)
+  (isearch-search-and-update))
 
-(add-hook 'isearch-mode-hook
- (lambda ()
-   "Activate my customized Isearch word yank command."
-   (substitute-key-definition 'isearch-yank-word-or-char 
-			      'custom-isearch-yank-word-or-char-from-beginning
-			      isearch-mode-map)))
+(defun isearch-forward-at-point (&optional regexp-p no-recursive-edit)
+  "Interactive search forward for the symbol at point."
+  (interactive "P\np")
+  (if regexp-p (isearch-forward regexp-p no-recursive-edit)
+    (let* ((bounds (bounds-of-thing-at-point 'symbol))
+	   (end (cdr bounds))
+           (begin (car bounds)))
+      (if (eq begin end)
+          (isearch-forward regexp-p no-recursive-edit)
+        (setq isearch-initial-string (buffer-substring begin end))
+        (add-hook 'isearch-mode-hook 'isearch-set-initial-string)
+        (isearch-forward regexp-p no-recursive-edit)))))
+
+(global-set-key [f5] 'isearch-forward-at-point)
