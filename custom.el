@@ -21,12 +21,16 @@
  '(tool-bar-mode nil)
  '(scroll-bar-mode nil))
 
-
 ;;; General 
 ;(desktop-save-mode t)
 (cua-mode t)
 (setq cua-enable-cua-keys nil)
 (global-set-key (kbd "C-z") 'undo)
+
+; stop leaving backup~ turds scattered everywhere
+(setq backup-directory-alist '(("." . "~/.emacs-backups"))) 
+; stop forcing me to spell out "yes"
+(fset 'yes-or-no-p 'y-or-n-p)
 
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
@@ -182,3 +186,4 @@ spends an eternity in a regex if you make a typo."
         (isearch-forward regexp-p no-recursive-edit)))))
 
 (global-set-key [f5] 'isearch-forward-at-point)
+
