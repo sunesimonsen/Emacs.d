@@ -21,9 +21,12 @@
  '(tool-bar-mode nil)
  '(scroll-bar-mode nil))
 
+
 ;;; General 
 ;(desktop-save-mode t)
 (cua-mode t)
+(setq cua-enable-cua-keys nil)
+(global-set-key (kbd "C-z") 'undo)
 
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
