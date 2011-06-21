@@ -19,7 +19,8 @@
  '(cua-mode t nil (cua-base))
  '(menu-bar-mode t)
  '(tool-bar-mode nil)
- '(scroll-bar-mode nil))
+ '(scroll-bar-mode nil)
+ '(truncate-lines t))
 
 ;;; General 
 ;(desktop-save-mode t)
@@ -187,3 +188,8 @@ spends an eternity in a regex if you make a typo."
 
 (global-set-key [f5] 'isearch-forward-at-point)
 
+;;; Registers
+;TODO make an append with separator where the 
+;default separator can be changed or specified 
+  
+(global-set-key (kbd "C-x r a") 'append-to-register)
