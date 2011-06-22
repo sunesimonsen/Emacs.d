@@ -186,10 +186,63 @@ spends an eternity in a regex if you make a typo."
         (add-hook 'isearch-mode-hook 'isearch-set-initial-string)
         (isearch-forward regexp-p no-recursive-edit)))))
 
-(global-set-key [f5] 'isearch-forward-at-point)
+(defun isearch-backward-at-point (&optional regexp-p no-recursive-edit)
+  "Interactive search backward for the symbol at point."
+  (interactive "P\np")
+  (if regexp-p (isearch-backward regexp-p no-recursive-edit)
+    (let* ((bounds (bounds-of-thing-at-point 'symbol))
+	   (end (cdr bounds))
+           (begin (car bounds)))
+      (if (eq begin end)
+          (isearch-backward regexp-p no-recursive-edit)
+        (setq isearch-initial-string (buffer-substring begin end))
+        (add-hook 'isearch-mode-hook 'isearch-set-initial-string)
+        (isearch-backward regexp-p no-recursive-edit)))))
+
+(global-set-key (kbd "C-.") 'isearch-forward-at-point)
+(global-set-key (kbd "C-,") 'isearch-backward-at-point)
 
 ;;; Registers
 ;TODO make an append with separator where the 
 ;default separator can be changed or specified 
   
 (global-set-key (kbd "C-x r a") 'append-to-register)
+
+(defun append-to-register-with-newline 
+  (register start end &optional delete-flag)
+  "Append region to text register REGISTER with a new line as separator.
+With prefix arg, delete as well.
+Called from program, takes four args: REGISTER, START, END and DELETE-FLAG.
+START and END are buffer positions indicating what to append."
+  (interactive "cAppend to register: \nr\nP")
+  (let ((separator "\n")
+	(value (get-register register)))
+    (or 
+     (not value)
+     (stringp value)
+     (error "Register does not contain text"))
+    (set-register register 
+		  (concat (if value (concat value separator) "")
+			  (buffer-substring start end)))
+    (if delete-flag (delete-region start end))))
+
+(defun clear-register (register) 
+  (interactive "cRegister to clear: ")
+  (set-register register nil))
+
+(global-set-key (kbd "M-æ M-a") 'append-to-register)
+(global-set-key (kbd "M-æ a") 'append-to-register-with-newline)
+(global-set-key (kbd "M-æ i") 'insert-register)
+(global-set-key (kbd "M-æ s") 'copy-to-register)
+(global-set-key (kbd "M-æ v") 'view-register)
+(global-set-key (kbd "M-æ SPC") 'point-to-register)
+(global-set-key (kbd "M-æ C-SPC") 'point-to-register)
+(global-set-key (kbd "M-æ j") 'jump-to-register)
+(global-set-key (kbd "M-æ c") 'clear-register)
+
+
+
+;;; Bookmarks 
+(global-set-key (kbd "C-æ l") 'bookmark-bmenu-list)
+(global-set-key (kbd "C-æ j") 'bookmark-jump)
+(global-set-key (kbd "C-æ b") 'bookmark-set)
