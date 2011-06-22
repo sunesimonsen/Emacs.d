@@ -227,7 +227,8 @@ START and END are buffer positions indicating what to append."
     (if delete-flag (delete-region start end))))
 
 (defun clear-register (register) 
-  (interactive "cRegister to clear: ")
+  "Sets the specified register to nil."
+  (interactive "cRegiszer to clear: ")
   (set-register register nil))
 
 (global-set-key (kbd "M-æ M-a") 'append-to-register)
@@ -246,3 +247,7 @@ START and END are buffer positions indicating what to append."
 (global-set-key (kbd "C-æ l") 'bookmark-bmenu-list)
 (global-set-key (kbd "C-æ j") 'bookmark-jump)
 (global-set-key (kbd "C-æ b") 'bookmark-set)
+
+;;; Replace 
+(global-set-key (kbd "C-f") 'query-replace)
+(global-set-key (kbd "M-f") 'query-replace-regexp)
