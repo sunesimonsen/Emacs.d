@@ -87,6 +87,10 @@ If point was already at that position, move point to beginning of line."
 (global-set-key (kbd "M-2") 'split-window-vertically)
 (global-set-key (kbd "M-3") 'split-window-horizontally)
 
+;; Buffers
+(global-set-key [XF86Back] 'previous-buffer)
+(global-set-key [XF86Forward] 'next-buffer)
+
 ;;; IDo mode
 (ido-mode t)
 (setq ido-enable-flex-matching t)
@@ -266,3 +270,6 @@ Subsequent calls expands the selection to larger semantic unit."
       (mark-sexp -1))))
 
 (global-set-key (kbd "M-8") 'extend-selection)
+
+
+(global-set-key [menu] 'imenu)
