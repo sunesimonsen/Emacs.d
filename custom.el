@@ -24,6 +24,8 @@
 
 ;;; General 
 ;(desktop-save-mode t)
+(setq inhibit-startup-message t)
+
 (cua-mode t)
 (setq cua-enable-cua-keys nil)
 (global-set-key (kbd "C-z") 'undo)
@@ -78,11 +80,17 @@ If point was already at that position, move point to beginning of line."
 ;;; Word completion
 (global-set-key "\C-b" 'dabbrev-expand)
 
-;;; Other window
+;;; Windows
 (global-set-key (kbd "C--") 'other-window)
+(global-set-key (kbd "M-0") 'delete-window)
+(global-set-key (kbd "M-1") 'delete-other-windows)
+(global-set-key (kbd "M-2") 'split-window-vertically)
+(global-set-key (kbd "M-3") 'split-window-horizontally)
 
 ;;; IDo mode
 (ido-mode t)
+(setq ido-enable-flex-matching t)
+(setq ido-enable-last-directory-history nil)
 
 ;;; Markdown mode 
 (setq auto-mode-alist
@@ -165,42 +173,11 @@ spends an eternity in a regex if you make a typo."
 
 (global-set-key (kbd "C-x p") 'ido-find-file-in-tag-files)
 
-;;;; isearch-forward-at-point
-(defvar isearch-initial-string nil)
-
-(defun isearch-set-initial-string ()
-  (remove-hook 'isearch-mode-hook 'isearch-set-initial-string)
-  (setq isearch-string isearch-initial-string)
-  (isearch-search-and-update))
-
-(defun isearch-forward-at-point (&optional regexp-p no-recursive-edit)
-  "Interactive search forward for the symbol at point."
-  (interactive "P\np")
-  (if regexp-p (isearch-forward regexp-p no-recursive-edit)
-    (let* ((bounds (bounds-of-thing-at-point 'symbol))
-	   (end (cdr bounds))
-           (begin (car bounds)))
-      (if (eq begin end)
-          (isearch-forward regexp-p no-recursive-edit)
-        (setq isearch-initial-string (buffer-substring begin end))
-        (add-hook 'isearch-mode-hook 'isearch-set-initial-string)
-        (isearch-forward regexp-p no-recursive-edit)))))
-
-(defun isearch-backward-at-point (&optional regexp-p no-recursive-edit)
-  "Interactive search backward for the symbol at point."
-  (interactive "P\np")
-  (if regexp-p (isearch-backward regexp-p no-recursive-edit)
-    (let* ((bounds (bounds-of-thing-at-point 'symbol))
-	   (end (cdr bounds))
-           (begin (car bounds)))
-      (if (eq begin end)
-          (isearch-backward regexp-p no-recursive-edit)
-        (setq isearch-initial-string (buffer-substring begin end))
-        (add-hook 'isearch-mode-hook 'isearch-set-initial-string)
-        (isearch-backward regexp-p no-recursive-edit)))))
-
-(global-set-key (kbd "C-.") 'isearch-forward-at-point)
-(global-set-key (kbd "C-,") 'isearch-backward-at-point)
+;;;; Highlight-Symbol
+(require 'highlight-symbol)
+(global-set-key (kbd "<f12>") 'highlight-symbol-at-point)
+(global-set-key (kbd "C-.") 'highlight-symbol-next)
+(global-set-key (kbd "C-,") 'highlight-symbol-prev)
 
 ;;; Registers
 ;TODO make an append with separator where the 
@@ -251,3 +228,41 @@ START and END are buffer positions indicating what to append."
 ;;; Replace 
 (global-set-key (kbd "C-f") 'query-replace)
 (global-set-key (kbd "M-f") 'query-replace-regexp)
+
+
+;;; Extend selection 
+;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
+(defun semnav-up (arg)
+  (interactive "p")
+  (when (nth 3 (syntax-ppss))
+    (if (> arg 0)
+        (progn
+          (skip-syntax-forward "^\"")
+          (goto-char (1+ (point)))
+          (decf arg))
+      (skip-syntax-backward "^\"")
+      (goto-char (1- (point)))
+      (incf arg)))
+  (up-list arg))
+
+;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
+(defun extend-selection (arg &optional incremental)
+  "Select the current word.
+Subsequent calls expands the selection to larger semantic unit."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+                     (or (and transient-mark-mode mark-active)
+                         (eq last-command this-command))))
+  (if incremental
+      (progn
+        (semnav-up (- arg))
+        (forward-sexp)
+        (mark-sexp -1))
+    (if (> arg 1)
+        (extend-selection (1- arg) t)
+      (if (looking-at "\\=\\(\\s_\\|\\sw\\)*\\_>")
+          (goto-char (match-end 0))
+        (unless (memq (char-before) '(?\) ?\"))
+          (forward-sexp)))
+      (mark-sexp -1))))
+
+(global-set-key (kbd "M-8") 'extend-selection)
