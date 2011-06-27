@@ -227,8 +227,6 @@ START and END are buffer positions indicating what to append."
 (global-set-key (kbd "M-æ j") 'jump-to-register)
 (global-set-key (kbd "M-æ c") 'clear-register)
 
-
-
 ;;; Bookmarks 
 (global-set-key (kbd "C-æ l") 'bookmark-bmenu-list)
 (global-set-key (kbd "C-æ j") 'bookmark-jump)
@@ -275,6 +273,5 @@ Subsequent calls expands the selection to larger semantic unit."
       (mark-sexp -1))))
 
 (global-set-key (kbd "M-8") 'extend-selection)
-
 
 (global-set-key [(meta menu)] 'imenu)
