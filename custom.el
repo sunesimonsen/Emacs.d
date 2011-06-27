@@ -87,6 +87,11 @@ If point was already at that position, move point to beginning of line."
 (global-set-key (kbd "M-2") 'split-window-vertically)
 (global-set-key (kbd "M-3") 'split-window-horizontally)
 
+(global-set-key (kbd "M-å") 'enlarge-window-horizontally)
+(global-set-key (kbd "M-ø") 'shrink-window-horizontally)
+(global-set-key (kbd "C-å") 'enlarge-window)
+(global-set-key (kbd "C-ø") 'shrink-window)
+
 ;; Buffers
 (global-set-key [XF86Back] 'previous-buffer)
 (global-set-key [XF86Forward] 'next-buffer)
@@ -272,4 +277,4 @@ Subsequent calls expands the selection to larger semantic unit."
 (global-set-key (kbd "M-8") 'extend-selection)
 
 
-(global-set-key [menu] 'imenu)
+(global-set-key [(meta menu)] 'imenu)
