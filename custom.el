@@ -52,8 +52,8 @@
 
 
 ;;; Drag stuff
-(require 'drag-stuff)
-(drag-stuff-global-mode t)
+;(require 'drag-stuff)
+;(drag-stuff-global-mode t)
 
 ;;; Color theme
 (require 'color-theme)
@@ -275,3 +275,20 @@ Subsequent calls expands the selection to larger semantic unit."
 (global-set-key (kbd "M-8") 'extend-selection)
 
 (global-set-key [(meta menu)] 'imenu)
+
+;;; Add prefix and suffix
+(defun prefix-suffix-region (prefix suffix start end) 
+  "Add a prefix and a suffix string to each line between mark and point." 
+  (interactive "sPrefix string: \nsSuffix string: \nr") 
+  (if prefix 
+      (let ((p (point))
+	    (count (count-lines start end))) 
+	(goto-char start) 
+	(while (> count 0) 
+	  (setq count (1- count)) 
+	  (beginning-of-line 1) 
+	  (insert prefix) 
+	  (end-of-line 1) 
+	  (insert suffix) 
+	  (forward-char 1))
+	(goto-char p))))
