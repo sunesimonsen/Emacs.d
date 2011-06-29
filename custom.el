@@ -20,7 +20,8 @@
  '(menu-bar-mode t)
  '(tool-bar-mode nil)
  '(scroll-bar-mode nil)
- '(truncate-lines t))
+ '(truncate-lines t)
+ '(indent-tabs-mode nil))
 
 ;;; General 
 ;(desktop-save-mode t)
