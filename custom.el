@@ -215,7 +215,7 @@ START and END are buffer positions indicating what to append."
 
 (defun clear-register (register) 
   "Sets the specified register to nil."
-  (interactive "cRegiszer to clear: ")
+  (interactive "cRegister to clear: ")
   (set-register register nil))
 
 (global-set-key (kbd "M-æ M-a") 'append-to-register)
