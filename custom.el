@@ -293,3 +293,6 @@ Subsequent calls expands the selection to larger semantic unit."
 	  (insert suffix) 
 	  (forward-char 1))
 	(goto-char p))))
+
+
+(load (expand-file-name "~/.emacs.d/powerbuilder-mode.el"))
