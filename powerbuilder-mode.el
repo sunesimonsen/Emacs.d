@@ -116,26 +116,39 @@ For detail, see `comment-dwim'."
         (+ (current-indentation) match)))))
 
 
-(setq powerbuilder-for-regexp "^[ \t]*for[ \t]+.*[ \t]+to[ \t]+")
-(setq powerbuilder-next-regexp "^[ \t]*next")
+(setq powerbuilder-for-regexp 
+      (rx (* blank) "for" blank (+ not-newline) blank "to" blank))
+(setq powerbuilder-next-regexp 
+      (rx (* blank) "next" eow))
 
-(setq powerbuilder-if-regexp "^[ \t]*if.*\\(then\\|&\\)[ \t]*$")
-(setq powerbuilder-else-regexp "^[ \t]*else[ \t]*$")
-(setq powerbuilder-end-if-regexp "^[ \t]*end if")
+(setq powerbuilder-if-regexp 
+      (rx (* blank) "if" blank (+ not-newline) (or (and blank "then" eow) "&") (* blank) eol))
+(setq powerbuilder-else-regexp 
+      (rx (* blank) "else" (* blank) eol))
+(setq powerbuilder-end-if-regexp 
+      (rx (* blank) "end" (+ blank) "if" eow))
 
-(setq powerbuilder-do-while-regexp "^[ \t]*do[ \t]+while")
-(setq powerbuilder-loop-regexp "^[ \t]*loop")
+(setq powerbuilder-do-while-regexp 
+      (rx (* blank) "do" (+ blank) "while" eow))
+(setq powerbuilder-loop-regexp 
+      (rx (* blank) "loop" eow))
 
 (setq powerbuilder-function-regexp
       (rx (* blank) (or "public" "protected" "private") (+ blank) "function" blank (+ not-newline) ")" (* blank) ";"))
-(setq powerbuilder-end-function-regexp "^[ \t]*end[ \t]+function")
+(setq powerbuilder-end-function-regexp 
+      (rx (* blank) "end" (+ blank) "function" eow))
 
-(setq powerbuilder-choose-regexp "^[ \t]*choose[ \t]+case[ \t]+")
-(setq powerbuilder-end-choose-regexp "^[ \t]*end[ \t]+choose")
-(setq powerbuilder-case-regexp "^[ \t]*case[ \t]+")
+(setq powerbuilder-choose-regexp 
+      (rx (* blank) "choose" (+ blank) "case" eow))
+(setq powerbuilder-end-choose-regexp 
+      (rx (* blank) "end" (+ blank) "choose" eow))
+(setq powerbuilder-case-regexp 
+      (rx (* blank) "case" eow))
 
-(setq powerbuilder-type-from-regexp "^[ \t]*\\(global[ \t]+\\)?type[ \t]+.+[ \t]+from[ \t]+")
-(setq powerbuilder-end-type-regexp "^[ \t]*end[ \t]+type")
+(setq powerbuilder-type-from-regexp 
+      (rx (* blank) (? "global" (+ blank)) "type" blank (+ not-newline) blank "from" eow))
+(setq powerbuilder-end-type-regexp 
+      (rx (* blank) "end" (+ blank) "type"))
 
 (setq powerbuilder-event-regexp "^[ \t]*event[ \t]+")
 (setq powerbuilder-end-event-regexp "^[ \t]*end[ \t]+event")
