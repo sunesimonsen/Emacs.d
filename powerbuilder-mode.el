@@ -126,7 +126,8 @@ For detail, see `comment-dwim'."
 (setq powerbuilder-do-while-regexp "^[ \t]*do[ \t]+while")
 (setq powerbuilder-loop-regexp "^[ \t]*loop")
 
-(setq powerbuilder-function-regexp "^[ \t]*\\(public\\|protected\\|private\\)[ \t]+function[ \t]+.+)[ \t]*;")
+(setq powerbuilder-function-regexp
+      (rx (* blank) (or "public" "protected" "private") (+ blank) "function" blank (+ not-newline) ")" (* blank) ";"))
 (setq powerbuilder-end-function-regexp "^[ \t]*end[ \t]+function")
 
 (setq powerbuilder-choose-regexp "^[ \t]*choose[ \t]+case[ \t]+")
@@ -242,7 +243,7 @@ For detail, see `comment-dwim'."
 
 (defun powerbuilder-proper-indentation () 
   (let ((match 
-         (powerbuilder-maching-line 
+         (powerbuilder-match-line
           powerbuilder-end-block-indent-rules)))
     
     (cond 
