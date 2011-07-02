@@ -59,15 +59,16 @@ For detail, see `comment-dwim'."
 	       "unsignedinteger" "unsignedint" "uint"
 	       "double" "unsignedlong" "ulong"))
 	    (pb-constants
-	     '("ACTIVE" "AGENT" "ALL_SIDES" "ATTACH_BACK"))
+	     '())
 	    (pb-events
-	     '("at_rot_target" "at_target" "attach"))
+	     '())
 	    (pb-functions
 	     '("llAbs" "llAcos" "llAddToLandBanList" "llAddToLandPassList")))
 	
 	;; note: order below matters.
 	`((,(regexp-opt pb-types 'words)     . font-lock-type-face)
 	  (,(regexp-opt pb-constants 'words) . font-lock-constant-face)
+          ("\\w+!" . font-lock-constant-face)
 	  (" *\\w+:\\|goto +\\w+" . font-lock-reference-face)
 	  (,(regexp-opt pb-constants 'words) . font-lock-builtin-face)
 	  (,(regexp-opt pb-functions 'words) . font-lock-function-name-face)
@@ -115,55 +116,55 @@ For detail, see `comment-dwim'."
           0 
         (+ (current-indentation) match)))))
 
+(defun powerbuilder-end-block-regexp (label) 
+  (rx (* blank) "end" (+ blank) (eval label) eow))
 
 (setq powerbuilder-for-regexp 
       (rx (* blank) "for" blank (+ not-newline) blank "to" blank))
-(setq powerbuilder-next-regexp 
-      (rx (* blank) "next" eow))
+(setq powerbuilder-next-regexp (rx (* blank) "next" eow))
 
 (setq powerbuilder-if-regexp 
-      (rx (* blank) "if" blank (+ not-newline) (or (and blank "then" eow) "&") (* blank) eol))
-(setq powerbuilder-else-regexp 
-      (rx (* blank) "else" (* blank) eol))
-(setq powerbuilder-end-if-regexp 
-      (rx (* blank) "end" (+ blank) "if" eow))
+      (rx (* blank) "if" blank (+ not-newline) 
+          (or (and blank "then" eow) "&") (* blank) eol))
+(setq powerbuilder-else-regexp (rx (* blank) "else" (* blank) eol))
+(setq powerbuilder-end-if-regexp (powerbuilder-end-block-regexp "if"))
 
-(setq powerbuilder-do-while-regexp 
-      (rx (* blank) "do" (+ blank) "while" eow))
-(setq powerbuilder-loop-regexp 
-      (rx (* blank) "loop" eow))
+(setq powerbuilder-do-while-regexp (rx (* blank) "do" (+ blank) "while" eow))
+(setq powerbuilder-loop-regexp (rx (* blank) "loop" eow))
 
 (setq powerbuilder-function-regexp
-      (rx (* blank) (or "public" "protected" "private") (+ blank) "function" blank (+ not-newline) ")" (* blank) ";"))
+      (rx (* blank) (or "public" "protected" "private") (+ blank) 
+          "function" blank (+ not-newline) ")" (* blank) ";"))
 (setq powerbuilder-end-function-regexp 
-      (rx (* blank) "end" (+ blank) "function" eow))
+      (powerbuilder-end-block-regexp "function"))
 
-(setq powerbuilder-choose-regexp 
-      (rx (* blank) "choose" (+ blank) "case" eow))
-(setq powerbuilder-end-choose-regexp 
-      (rx (* blank) "end" (+ blank) "choose" eow))
-(setq powerbuilder-case-regexp 
-      (rx (* blank) "case" eow))
+(setq powerbuilder-choose-regexp (rx (* blank) "choose" (+ blank) "case" eow))
+(setq powerbuilder-end-choose-regexp (powerbuilder-end-block-regexp "choose"))
+(setq powerbuilder-case-regexp (rx (* blank) "case" eow))
 
 (setq powerbuilder-type-from-regexp 
-      (rx (* blank) (? "global" (+ blank)) "type" blank (+ not-newline) blank "from" eow))
-(setq powerbuilder-end-type-regexp 
-      (rx (* blank) "end" (+ blank) "type"))
+      (rx (* blank) (? "global" (+ blank)) 
+          "type" blank (+ not-newline) blank "from" eow))
+(setq powerbuilder-end-type-regexp (powerbuilder-end-block-regexp "type"))
 
-(setq powerbuilder-event-regexp "^[ \t]*event[ \t]+")
-(setq powerbuilder-end-event-regexp "^[ \t]*end[ \t]+event")
+(setq powerbuilder-event-regexp (rx (* blank) "event" eow))
+(setq powerbuilder-end-event-regexp (powerbuilder-end-block-regexp "event"))
 
-(setq powerbuilder-on-regexp "^[ \t]*on[ \t]+")
-(setq powerbuilder-end-on-regexp "^[ \t]*end[ \t]+on")
+(setq powerbuilder-on-regexp (rx (* blank) "on" eow))
+(setq powerbuilder-end-on-regexp (powerbuilder-end-block-regexp "on"))
 
-(setq powerbuilder-forward-prototypes-regexp "^[ \t]*forward[ \t]+prototypes")
-(setq powerbuilder-end-prototypes-regexp "^[ \t]*end[ \t]+prototypes")
+(setq powerbuilder-forward-prototypes-regexp 
+      (rx (* blank) "forward" (+ blank) "prototypes"))
+(setq powerbuilder-end-prototypes-regexp 
+      (powerbuilder-end-block-regexp "prototypes"))
 
-(setq powerbuilder-forward-regexp "^[ \t]*forward")
-(setq powerbuilder-end-forward-regexp "^[ \t]*end[ \t]+forward")
+(setq powerbuilder-forward-regexp (rx (* blank) "forward" eow))
+(setq powerbuilder-end-forward-regexp (powerbuilder-end-block-regexp "forward"))
 
-(setq powerbuilder-type-variables-regexp "^[ \t]*type[ \t]+variables")
-(setq powerbuilder-end-variables-regexp "^[ \t]*end[ \t]+variables")
+(setq powerbuilder-type-variables-regexp 
+      (rx (* blank) "type" (+ blank) "variables"))
+(setq powerbuilder-end-variables-regexp 
+      (powerbuilder-end-block-regexp "variables"))
 
 
 (setq indenters 
@@ -307,7 +308,8 @@ Major mode for editing Powerbuilder script"
   (set (make-local-variable 'indent-line-function) 'powerbuilder-indent-line)
 
   ;; modify the keymap
-  (define-key powerbuilder-mode-map [remap comment-dwim] 'powerbuilder-comment-dwim)
+  (define-key powerbuilder-mode-map 
+    [remap comment-dwim] 'powerbuilder-comment-dwim)
   )
 
 (provide 'powerbuilder-mode)
