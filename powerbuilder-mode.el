@@ -126,6 +126,9 @@ For detail, see `comment-dwim'."
 (setq powerbuilder-if-regexp 
       (rx (* blank) "if" blank (+ not-newline) 
           (or (and blank "then" eow) "&") (* blank) eol))
+(setq powerbuilder-elseif-regexp 
+      (rx (* blank) "elseif" blank (+ not-newline) 
+          (or (and blank "then" eow) "&") (* blank) eol))
 (setq powerbuilder-else-regexp (rx (* blank) "else" (* blank) eol))
 (setq powerbuilder-end-if-regexp (powerbuilder-end-block-regexp "if"))
 
@@ -182,7 +185,8 @@ For detail, see `comment-dwim'."
 
 (setq line-indenters 
       `(,powerbuilder-case-regexp
-        ,powerbuilder-else-regexp))
+        ,powerbuilder-else-regexp
+        ,powerbuilder-elseif-regexp))
 
 (setq unindenters 
       `(,powerbuilder-loop-regexp
@@ -206,6 +210,9 @@ For detail, see `comment-dwim'."
          ((,powerbuilder-if-regexp 0)
           (,powerbuilder-else-regexp 0)))
         
+        (,powerbuilder-elseif-regexp
+         ((,powerbuilder-if-regexp 0)))
+
         (,powerbuilder-next-regexp
          ((,powerbuilder-for-regexp 0)))
 
@@ -273,9 +280,12 @@ For detail, see `comment-dwim'."
 (defun powerbuilder-indent-line () 
   "Indent the current line as Powerscript source text."
   (interactive)
-  
-  (beginning-of-line)
-  (indent-line-to (max 0 (powerbuilder-proper-indentation))))
+  (let ((parse-status 
+         (save-excursion (parse-partial-sexp (point-min) (point-at-bol)))))
+
+    (when (not (nth 8 parse-status))  
+      (beginning-of-line)
+      (indent-line-to (max 0 (powerbuilder-proper-indentation))))))
 
 ;; define the mode
 (define-derived-mode powerbuilder-mode fundamental-mode
