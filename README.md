@@ -13,4 +13,4 @@ Run the following commands from bash:
 
 Add the following command to your ~/.emacs file.
 
-    (load (expand-file-name "~/.emacs.d/custom.el"))
+    (load (expand-file-name "~/.emacs.d/init.el"))
