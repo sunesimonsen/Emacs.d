@@ -6,10 +6,10 @@ Instalation
 
 Run the following commands from bash:
 
-    cd 
-    mkdir -p .emacs.d
-    cd .emacs.d
+    cd
+    mv .emacs.d .emacs.d.bak
     git clone http://github.com/sunesimonsen/Emacs.d.git
+    mv Emacs.d .emacs.d
 
 Add the following command to your ~/.emacs file.
 
