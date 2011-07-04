@@ -276,7 +276,7 @@ For detail, see `comment-dwim'."
      
      ('else (powerbuilder-indent-before)))))
 
-
+;;; TODO handle indentation of comments
 (defun powerbuilder-indent-line () 
   "Indent the current line as Powerscript source text."
   (interactive)
