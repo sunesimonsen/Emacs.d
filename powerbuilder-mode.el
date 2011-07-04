@@ -289,9 +289,7 @@ For detail, see `comment-dwim'."
 
 ;; define the mode
 (define-derived-mode powerbuilder-mode fundamental-mode
-  "powerbuilder mode
-Major mode for editing Powerbuilder script"
-
+  "powerbuilder" "Major mode for editing Powerbuilder script"
 
   ;; code for syntax highlighting
   (setq font-lock-defaults 
