@@ -276,16 +276,12 @@ For detail, see `comment-dwim'."
      
      ('else (powerbuilder-indent-before)))))
 
-;;; TODO handle indentation of comments
 (defun powerbuilder-indent-line () 
   "Indent the current line as Powerscript source text."
   (interactive)
-  (let ((parse-status 
-         (save-excursion (parse-partial-sexp (point-min) (point-at-bol)))))
-
-    (when (not (nth 8 parse-status))  
-      (beginning-of-line)
-      (indent-line-to (max 0 (powerbuilder-proper-indentation))))))
+  ;;; TODO handle indentation of comments
+  (beginning-of-line)
+  (indent-line-to (max 0 (powerbuilder-proper-indentation))))
 
 ;; define the mode
 (define-derived-mode powerbuilder-mode fundamental-mode
