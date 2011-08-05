@@ -287,6 +287,8 @@ Subsequent calls expands the selection to larger semantic unit."
 	(goto-char p))))
 
 (load (expand-file-name "~/.emacs.d/powerbuilder-mode.el"))
+(autoload 'powerbuilder-mode "powerbuilder-mode" "Power Builder mode." t)
+(setq auto-mode-alist (append '(("\\.\\(srw\\|sru\\|srm\\)$" . powerbuilder-mode)) auto-mode-alist))
 
 ;;; Rectangles
 (global-set-key (kbd "C-' i") 'string-insert-rectangle)
