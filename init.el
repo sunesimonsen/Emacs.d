@@ -306,7 +306,5 @@ Subsequent calls expands the selection to larger semantic unit."
 ;;; Marks 
 (load (expand-file-name "~/.emacs.d/visible-mark.el"))
 
-(global-set-key [(control XF86Back)] 'pop-to-mark-command)
-
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
