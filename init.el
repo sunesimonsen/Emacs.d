@@ -38,6 +38,7 @@
      (expand-file-name "~/.emacs.d/elpa/package.el"))
   (package-initialize))
 
+(add-to-list 'load-path "~/.emacs.d/scala-mode/")
 
 ;;; Scrolling
 (setq scroll-margin 4)
@@ -229,7 +230,9 @@ START and END are buffer positions indicating what to append."
 (global-set-key (kbd "C-f") 'query-replace)
 (global-set-key (kbd "M-f") 'query-replace-regexp)
 
-
+;;; Delete lines
+(global-set-key (kbd "C-d") 'kill-whole-line)
+ 
 ;;; Extend selection 
 ;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
 (defun semnav-up (arg)
