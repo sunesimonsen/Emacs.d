@@ -95,6 +95,30 @@ If point was already at that position, move point to beginning of line."
 (setq ido-enable-flex-matching t)
 (setq ido-enable-last-directory-history nil)
 
+;;; SMEX
+(global-set-key 
+ [(meta x)] 
+ (lambda ()
+   (interactive)
+   (or (boundp 'smex-cache)
+       (smex-initialize))
+   (global-set-key [(meta x)] 'smex)
+   (smex)))
+
+(global-set-key 
+ [(shift meta x)] 
+ (lambda ()
+   (interactive)
+   (or (boundp 'smex-cache)
+       (smex-initialize))
+   (global-set-key [(shift meta x)] 'smex-major-mode-commands)
+   (smex-major-mode-commands)))
+
+(defun smex-update-after-load (unused)
+  (when (boundp 'smex-cache)
+    (smex-update)))
+(add-hook 'after-load-functions 'smex-update-after-load)
+
 ;;; Markdown mode 
 (setq auto-mode-alist
       (cons '("\\.\\(markdown\\|md\\)" . markdown-mode) auto-mode-alist))
@@ -170,8 +194,9 @@ Then move to that line and indent accordning to mode"
 
 This is useful because when the ido list is huge, ido flex matching
 spends an eternity in a regex if you make a typo."
-  (let ((ido-enable-flex-matching (< (* (length (ad-get-arg 0)) (length ido-text))
-                                     af-ido-flex-fuzzy-limit)))
+  (let ((ido-enable-flex-matching 
+         (< (* (length (ad-get-arg 0)) (length ido-text))
+            af-ido-flex-fuzzy-limit)))
     ad-do-it))
 
 (global-set-key (kbd "C-x p") 'ido-find-file-in-tag-files)
