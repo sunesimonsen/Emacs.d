@@ -255,7 +255,7 @@ START and END are buffer positions indicating what to append."
 (global-set-key (kbd "C-f") 'query-replace)
 (global-set-key (kbd "M-f") 'query-replace-regexp)
 
-;;; Delete lines
+;;; Delete 
 (global-set-key (kbd "C-d") 'kill-whole-line)
  
 ;;; Extend selection 
@@ -327,9 +327,14 @@ Subsequent calls expands the selection to larger semantic unit."
 (global-set-key (kbd "C-' y") 'yank-rectangle)
 (global-set-key (kbd "C-' d") 'delete-rectangle)
 
+;;; Marks
+(defun jump-to-mark ()
+  (interactive) 
+  (set-mark-command 0))
+(global-set-key [(meta left)] 'jump-to-mark)
 
-;;; Marks 
 (load (expand-file-name "~/.emacs.d/visible-mark.el"))
 
+;;; Customize
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)

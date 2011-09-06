@@ -9,7 +9,9 @@
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(transient-mark-mode nil)
- '(truncate-lines t))
+ '(truncate-lines t)
+ '(x-select-enable-clipboard t)
+ '(yank-pop-change-selection t))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
