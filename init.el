@@ -43,6 +43,7 @@
      (expand-file-name "~/.emacs.d/elpa/package.el"))
   (package-initialize))
 
+(add-to-list 'load-path "~/.emacs.d/scala-mode/")
 
 ;;; Scrolling
 (setq scroll-margin 4)
@@ -98,6 +99,30 @@ If point was already at that position, move point to beginning of line."
 (ido-mode t)
 (setq ido-enable-flex-matching t)
 (setq ido-enable-last-directory-history nil)
+
+;;; SMEX
+(global-set-key 
+ [(meta x)] 
+ (lambda ()
+   (interactive)
+   (or (boundp 'smex-cache)
+       (smex-initialize))
+   (global-set-key [(meta x)] 'smex)
+   (smex)))
+
+(global-set-key 
+ [(shift meta x)] 
+ (lambda ()
+   (interactive)
+   (or (boundp 'smex-cache)
+       (smex-initialize))
+   (global-set-key [(shift meta x)] 'smex-major-mode-commands)
+   (smex-major-mode-commands)))
+
+(defun smex-update-after-load (unused)
+  (when (boundp 'smex-cache)
+    (smex-update)))
+(add-hook 'after-load-functions 'smex-update-after-load)
 
 ;;; Markdown mode 
 (setq auto-mode-alist
@@ -174,8 +199,9 @@ Then move to that line and indent accordning to mode"
 
 This is useful because when the ido list is huge, ido flex matching
 spends an eternity in a regex if you make a typo."
-  (let ((ido-enable-flex-matching (< (* (length (ad-get-arg 0)) (length ido-text))
-                                     af-ido-flex-fuzzy-limit)))
+  (let ((ido-enable-flex-matching 
+         (< (* (length (ad-get-arg 0)) (length ido-text))
+            af-ido-flex-fuzzy-limit)))
     ad-do-it))
 
 (global-set-key (kbd "C-x p") 'ido-find-file-in-tag-files)
@@ -234,7 +260,9 @@ START and END are buffer positions indicating what to append."
 (global-set-key (kbd "C-f") 'query-replace)
 (global-set-key (kbd "M-f") 'query-replace-regexp)
 
-
+;;; Delete lines
+(global-set-key (kbd "C-d") 'kill-whole-line)
+ 
 ;;; Extend selection 
 ;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
 (defun semnav-up (arg)
@@ -307,8 +335,6 @@ Subsequent calls expands the selection to larger semantic unit."
 
 ;;; Marks 
 (load (expand-file-name "~/.emacs.d/visible-mark.el"))
-
-(global-set-key [(control XF86Back)] 'pop-to-mark-command)
 
 ;;; DOS 
 (load (expand-file-name "~/.emacs.d/dos.el"))
