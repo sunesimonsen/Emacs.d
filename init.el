@@ -28,6 +28,11 @@
 ; stop forcing me to spell out "yes"
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;; I hate tabs!
+;(setq-default indent-tabs-mode nil)
+(setq c-basic-indent 2)
+(setq tab-width 4)
+
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
 ;;; interfacing with ELPA, the package archive.
@@ -304,6 +309,11 @@ Subsequent calls expands the selection to larger semantic unit."
 (load (expand-file-name "~/.emacs.d/visible-mark.el"))
 
 (global-set-key [(control XF86Back)] 'pop-to-mark-command)
+
+;;; DOS 
+(load (expand-file-name "~/.emacs.d/dos.el"))
+(autoload 'dos-mode "dos" "Edit Dos scripts." t)
+(add-to-list 'auto-mode-alist '("\\.bat$" . dos-mode))
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
