@@ -260,8 +260,9 @@ START and END are buffer positions indicating what to append."
 (global-set-key (kbd "C-f") 'query-replace)
 (global-set-key (kbd "M-f") 'query-replace-regexp)
 
-;;; Delete lines
+;;; Delete 
 (global-set-key (kbd "C-d") 'kill-whole-line)
+(global-set-key [delete] 'delete-char)
  
 ;;; Extend selection 
 ;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
@@ -332,8 +333,12 @@ Subsequent calls expands the selection to larger semantic unit."
 (global-set-key (kbd "C-' y") 'yank-rectangle)
 (global-set-key (kbd "C-' d") 'delete-rectangle)
 
+;;; Marks
+(defun jump-to-mark ()
+  (interactive) 
+  (set-mark-command 0))
+(global-set-key [(meta left)] 'jump-to-mark)
 
-;;; Marks 
 (load (expand-file-name "~/.emacs.d/visible-mark.el"))
 
 ;;; DOS 
@@ -341,5 +346,6 @@ Subsequent calls expands the selection to larger semantic unit."
 (autoload 'dos-mode "dos" "Edit Dos scripts." t)
 (add-to-list 'auto-mode-alist '("\\.bat$" . dos-mode))
 
+;;; Customize
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
