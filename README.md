@@ -1,8 +1,10 @@
 Emacs Setup
 ===========
 
-Instalation
------------
+Prerequisite
+
+* Emacs 23
+* emacs-color-theme
 
 Run the following commands from bash:
 
