@@ -303,8 +303,15 @@ Subsequent calls expands the selection to larger semantic unit."
 
 (global-set-key [(meta menu)] 'imenu)
 
-;;; Add prefix and suffix
+
 (defun prefix-suffix-region (prefix suffix start end) 
+  "Add a prefix and a suffix string to each line between mark and point." 
+  (interactive "sPrefix string: \nsSuffix string: \nr") 
+  (replace-regexp 
+   (rx (submatch line-start (* blank)) (submatch (* not-newline) (not blank)) (submatch (* blank) line-end)) 
+   (concat "\\1" prefix "\\2" suffix "\\3") nil start end))
+  
+(defun prefix-suffix-region-preserving-whitespace (prefix suffix start end) 
   "Add a prefix and a suffix string to each line between mark and point." 
   (interactive "sPrefix string: \nsSuffix string: \nr") 
   (if prefix 
