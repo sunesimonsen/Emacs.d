@@ -45,11 +45,6 @@
 
 (add-to-list 'load-path "~/.emacs.d/scala-mode/")
 
-;;; Scrolling
-(setq scroll-margin 4)
-(setq scroll-step 1)
-
-
 ;;; Drag stuff
 ;(require 'drag-stuff)
 ;(drag-stuff-global-mode t)
