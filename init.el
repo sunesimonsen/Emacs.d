@@ -45,11 +45,6 @@
 
 (add-to-list 'load-path "~/.emacs.d/scala-mode/")
 
-;;; Scrolling
-(setq scroll-margin 4)
-(setq scroll-step 1)
-
-
 ;;; Drag stuff
 ;(require 'drag-stuff)
 ;(drag-stuff-global-mode t)
@@ -348,6 +343,14 @@ Subsequent calls expands the selection to larger semantic unit."
 
 (load (expand-file-name "~/.emacs.d/visible-mark.el"))
 
+;;; X Maximized
+(defun maximize-window (&optional f)
+       (interactive)
+       (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+	    		 '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+       (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+	    		 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0)))
+
 ;;; DOS 
 (load (expand-file-name "~/.emacs.d/dos.el"))
 (autoload 'dos-mode "dos" "Edit Dos scripts." t)
@@ -356,3 +359,5 @@ Subsequent calls expands the selection to larger semantic unit."
 ;;; Customize
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
+
+
