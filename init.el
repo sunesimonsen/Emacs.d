@@ -353,4 +353,10 @@ Subsequent calls expands the selection to larger semantic unit."
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
+;;; File management
+(put 'dired-find-alternate-file 'disabled nil)
 
+;;; ELPA
+(setq package-archives '(("ELPA" . "http://tromey.com/elpa/") 
+                         ("gnu" . "http://elpa.gnu.org/packages/")
+                         ("SC"  . "http://joseito.republika.pl/sunrise-commander/")))
