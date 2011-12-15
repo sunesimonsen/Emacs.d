@@ -95,15 +95,17 @@ If point was already at that position, move point to beginning of line."
 (setq ido-enable-flex-matching t)
 (setq ido-enable-last-directory-history nil)
 
+(defun lazy-load-smex ()
+  (interactive)
+  (or (boundp 'smex-cache)
+      (smex-initialize))
+  (global-set-key [(meta x)] 'smex)
+  (global-set-key [menu] 'smex)
+  (smex))
+
 ;;; SMEX
-(global-set-key 
- [(meta x)] 
- (lambda ()
-   (interactive)
-   (or (boundp 'smex-cache)
-       (smex-initialize))
-   (global-set-key [(meta x)] 'smex)
-   (smex)))
+(global-set-key [(meta x)] 'lazy-load-smex)
+(global-set-key [menu] 'lazy-load-smex)
 
 (global-set-key 
  [(shift meta x)] 
@@ -258,7 +260,14 @@ START and END are buffer positions indicating what to append."
 ;;; Delete 
 (global-set-key (kbd "C-d") 'kill-whole-line)
 (global-set-key [delete] 'delete-char)
+
+;;; Command on region
+(global-set-key (kbd "C-' C-'") 'shell-command-on-region)
  
+;;; Navigatio
+(global-set-key (kbd "C-<") 'end-of-buffer)
+(global-set-key (kbd "M-<") 'beginning-of-buffer)
+
 ;;; Extend selection 
 ;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
 (defun semnav-up (arg)
@@ -296,9 +305,6 @@ Subsequent calls expands the selection to larger semantic unit."
 ;;todo rebind
 (global-set-key (kbd "M-8") 'extend-selection)
 
-(global-set-key [(meta menu)] 'imenu)
-
-
 (defun prefix-suffix-region (prefix suffix start end) 
   "Add a prefix and a suffix string to each line between mark and point." 
   (interactive "sPrefix string: \nsSuffix string: \nr") 
@@ -334,6 +340,9 @@ Subsequent calls expands the selection to larger semantic unit."
 (global-set-key (kbd "C-' k") 'kill-rectangle)
 (global-set-key (kbd "C-' y") 'yank-rectangle)
 (global-set-key (kbd "C-' d") 'delete-rectangle)
+
+;;; imenu
+(global-set-key [(meta menu)] 'imenu)
 
 ;;; Marks
 (defun jump-to-mark ()
