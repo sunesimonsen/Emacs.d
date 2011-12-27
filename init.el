@@ -29,7 +29,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; I hate tabs!
-;(setq-default indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
 (setq c-basic-indent 2)
 (setq tab-width 4)
 
@@ -375,4 +375,7 @@ Subsequent calls expands the selection to larger semantic unit."
 ;;; ELPA
 (setq package-archives '(("ELPA" . "http://tromey.com/elpa/") 
                          ("gnu" . "http://elpa.gnu.org/packages/")
-                         ("SC"  . "http://joseito.republika.pl/sunrise-commander/")))
+                         ("SC"  . "http://joseito.republika.pl/sunrise-commander/")
+                         ("MM" . "http://marmalade-repo.org/packages/")))
+
+;; Change package archive (setq package-archive-base "http://elpa.gnu.org/packages/")

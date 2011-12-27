@@ -11,6 +11,7 @@
  '(scroll-conservatively 1000)
  '(scroll-margin 0)
  '(scroll-step 1)
+ '(sr-listing-switches "-alh")
  '(sr-terminal-program "bash")
  '(tool-bar-mode nil)
  '(transient-mark-mode nil)
