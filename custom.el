@@ -6,6 +6,7 @@
  '(case-replace nil)
  '(global-visible-mark-mode t)
  '(indent-tabs-mode nil)
+ '(js2-bounce-indent-p t)
  '(menu-bar-mode t)
  '(scroll-bar-mode nil)
  '(scroll-conservatively 1000)
@@ -16,8 +17,10 @@
  '(tool-bar-mode nil)
  '(transient-mark-mode nil)
  '(truncate-lines t)
+ '(visible-bell nil)
  '(x-select-enable-clipboard t)
- '(yank-pop-change-selection t))
+ '(yank-pop-change-selection t)
+ '(yas/prompt-functions (quote (yas/ido-prompt yas/x-prompt yas/dropdown-prompt yas/completing-prompt yas/no-prompt))))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.

@@ -1,0 +1,4 @@
+# name: attr_reader ...
+# key: atr
+# --
+attr_reader :

@@ -15,6 +15,16 @@
 ;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
+;;; helper functions
+(defun find-by-string-key (key seq)
+  (assoc-if (lambda (x) (string-equal x key)) seq))
+
+(defun cdr* (seq)
+  (map 'list 'cdr seq))
+
+(defun car* (seq)
+  (map 'list 'car seq))
+
 ;;; General 
 ;(desktop-save-mode t)
 (setq inhibit-startup-message t)
@@ -43,7 +53,13 @@
      (expand-file-name "~/.emacs.d/elpa/package.el"))
   (package-initialize))
 
-(add-to-list 'load-path "~/.emacs.d/scala-mode/")
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/scala-mode/"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/moz/"))
+
+(autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
+(autoload 'inferior-moz-mode "moz" "MozRepl Inferior Mode" t)
+
+(load (expand-file-name "~/.emacs.d/js2-mode-indentation.el"))
 
 ;;; Drag stuff
 ;(require 'drag-stuff)
@@ -126,15 +142,18 @@ If point was already at that position, move point to beginning of line."
       (cons '("\\.\\(markdown\\|md\\)" . markdown-mode) auto-mode-alist))
 
 ;;; YASnippet
-(setq yas/root-directory "~/.emacs.d/snippets")
-(yas/load-directory yas/root-directory)
+;(setq yas/root-directory "~/.emacs.d/snippets")
+;(yas/load-directory yas/root-directory)
+(add-to-list 'load-path "~/.emacs.d/yasnippet")
+(require 'yasnippet) ;; not yasnippet-bundle
 (yas/global-mode t)
+
 ;; Alternative yas expand
 (global-set-key (kbd "M-b") 'yas/expand)
 
 ;;; Git grep 
 ;; There's something similar (but fancier) in vc-git.el: vc-git-grep
-;; -I means don't search through binary files
+;; -It means don't search through binary files
 (defcustom git-grep-switches "--extended-regexp -I -n --ignore-case"
   "Switches to pass to `git grep'."
   :type 'string)
@@ -151,8 +170,6 @@ If point was already at that position, move point to beginning of line."
 ;;; Regexps
 (global-set-key (kbd "M-s") 'isearch-forward-regexp)
 (global-set-key (kbd "M-r") 'isearch-backward-regexp)
-
-(defalias 'qrr 'query-replace-regexp)
 
 ;;; Macros
 (global-set-key [f8] 'call-last-kbd-macro)
@@ -213,8 +230,6 @@ spends an eternity in a regex if you make a typo."
 ;TODO make an append with separator where the 
 ;default separator can be changed or specified 
   
-(global-set-key (kbd "C-x r a") 'append-to-register)
-
 (defun append-to-register-with-newline 
   (register start end &optional delete-flag)
   "Append region to text register REGISTER with a new line as separator.
@@ -258,8 +273,8 @@ START and END are buffer positions indicating what to append."
 (global-set-key (kbd "M-f") 'query-replace-regexp)
 
 ;;; Delete 
-(global-set-key (kbd "C-d") 'kill-whole-line)
-(global-set-key [delete] 'delete-char)
+;(global-set-key (kbd "C-d") 'kill-whole-line)
+;(global-set-key [delete] 'delete-char)
 
 ;;; Command on region
 (global-set-key (kbd "C-' C-'") 'shell-command-on-region)
@@ -328,6 +343,18 @@ Subsequent calls expands the selection to larger semantic unit."
 	  (forward-char 1))
 	(goto-char p))))
 
+(defun insert-numbers (offset start end)
+  "Inserts increasing number for each line in the region starting from OFFSET"
+  (interactive "nOffset: \nr")
+  (save-excursion
+    (widen)
+    (goto-char start)
+    (let ((i offset))
+      (while (< (point) end)
+        (insert (format "%d " i))
+        (forward-line)
+        (setq i (1+ i))))))
+
 (load (expand-file-name "~/.emacs.d/powerbuilder-mode.el"))
 (autoload 'powerbuilder-mode "powerbuilder-mode" "Power Builder mode." t)
 (setq auto-mode-alist (append '(("\\.\\(srw\\|sru\\|srm\\)$" . powerbuilder-mode)) auto-mode-alist))
@@ -378,4 +405,14 @@ Subsequent calls expands the selection to larger semantic unit."
                          ("SC"  . "http://joseito.republika.pl/sunrise-commander/")
                          ("MM" . "http://marmalade-repo.org/packages/")))
 
-;; Change package archive (setq package-archive-base "http://elpa.gnu.org/packages/")
+(defun package-change-archive ()
+  "Changes the ELPA package archive"
+  (interactive)
+  (save-excursion
+    (let* ((enable-recursive-minibuffers t)
+          (keys (car* package-archives))
+          (key (ido-completing-read "Archive: " keys nil t))
+          (archive (find-by-string-key key package-archives))
+          (url (cdr archive)))
+      (setq package-archive-base url)
+      (message "Changes package archive to %s" url))))
