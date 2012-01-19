@@ -423,65 +423,48 @@ Subsequent calls expands the selection to larger semantic unit."
 ;;; subword-mode
 (subword-mode 't)
 
-;;; Mark multiple mode
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/site-lisp/mark-multiple/"))
-
-(require 'inline-string-rectangle)
-(global-set-key (kbd "C-' r") 'inline-string-rectangle)
-(global-set-key (kbd "C-x r t") 'inline-string-rectangle)
-
-(require 'mark-more-like-this)
-;(global-set-key (kbd "M-S-'") 'mark-previous-like-this)
-;(global-set-key (kbd "M-'") 'mark-next-like-this)
-(global-set-key (kbd "M-'") 'mark-more-like-this) ; like the other two, but takes an argument (negative is previous)
-
-;; (require 'rename-sgml-tag)
-;; (define-key sgml-mode-map (kbd "C-c C-r") 'rename-sgml-tag)
-
-
-
 (defun expand-region-to-whole-lines ()
   "Expand the region to make it encompass whole lines.
 If the region is not active, activate the current line."
-  (interactive)
-  (if (not mark-active)
+  (interactive)                       
+  (if (not mark-active)               
       ;; Create region from current line
-      (progn 
-        (beginning-of-line)
-        (set-mark (point))
-        (end-of-line))
+      (progn                          
+        (beginning-of-line)           
+        (set-mark (point))            
+        (end-of-line))                
     ;; The mark is active, expand region
-    (let ((beg (region-beginning))
-          (end (region-end)))
+    (let ((beg (region-beginning))    
+          (end (region-end)))         
       (goto-char beg)                  
-      (beginning-of-line)
-      (set-mark (point))
-      (goto-char end)
+      (beginning-of-line)             
+      (set-mark (point))              
+      (goto-char end)                 
       (unless (bolp) (end-of-line)))))
-
+                                      
 (global-set-key (kbd "C-l") 'expand-region-to-whole-lines)
-
-;;; comments
-
-;; Original idea from
+                                      
+;;; comments                          
+                                      
+;; Original idea from                 
 ;; http://www.opensubscriber.com/message/emacs-devel@gnu.org/10971693.html
 (defun comment-dwim-line (&optional arg)
   "Replacement for the comment-dwim command.
 If no region is selected and current line is not blank and we are not at the end of the line,
-then comment current line.
+then comment current line.            
 Replaces default behaviour of comment-dwim, when it inserts comment at the end of the line."
-  (interactive)
-  (comment-normalize-vars)
-  (save-excursion
-    (expand-region-to-whole-lines)
+  (interactive)                       
+  (comment-normalize-vars)            
+  (save-excursion                     
+    (expand-region-to-whole-lines)    
     (comment-or-uncomment-region (region-beginning) (region-end))))
-
+                                      
 (global-set-key (kbd "C-c C-c") 'comment-dwim-line)
-
-(delete-selection-mode 't)
-(transient-mark-mode nil)
-
-(defun toggle-visible-region ()
+                                      
+(delete-selection-mode 't)            
+(transient-mark-mode nil)             
+                                      
+(defun toggle-visible-region ()       
   (interactive)
   (if (region-active-p)
       (deactivate-mark)
