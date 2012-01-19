@@ -49,6 +49,7 @@
 
 (defun my-js2-mode-hook ()
   (require 'js)
+  (require 'newcomment)
   ;(setq js-indent-level 8
   ;      indent-tabs-mode nil
   ;      c-basic-offset 8)
@@ -67,8 +68,15 @@
   (define-key js2-mode-map [(backspace)] 'c-electric-backspace)
   (define-key js2-mode-map [(control d)] 'c-electric-delete-forward)
   (define-key js2-mode-map [(control meta q)] 'my-indent-sexp)
+
+  (define-key js2-mode-map (kbd "C-d") 'kill-whole-line)
+  (define-key js2-mode-map [delete] 'delete-char)
+
+  (require 'js2-rename-var)
+  (define-key js2-mode-map (kbd "C-c C-r") 'js2-rename-var)
+
   (if (featurep 'js2-highlight-vars)
       (js2-highlight-vars-mode))
-  (message "My JS2 hook"))
+  (message "j2-mode hook"))
 
 (add-hook 'js2-mode-hook 'my-js2-mode-hook)

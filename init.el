@@ -42,6 +42,7 @@
 (setq-default indent-tabs-mode nil)
 (setq c-basic-indent 2)
 (setq tab-width 4)
+(setq sgml-basic-offset 4)
 
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
@@ -150,6 +151,8 @@ If point was already at that position, move point to beginning of line."
 
 ;; Alternative yas expand
 (global-set-key (kbd "M-b") 'yas/expand)
+(global-set-key (kbd "C-i") 'indent-for-tab-command)
+
 
 ;;; Git grep 
 ;; There's something similar (but fancier) in vc-git.el: vc-git-grep
@@ -273,8 +276,8 @@ START and END are buffer positions indicating what to append."
 (global-set-key (kbd "M-f") 'query-replace-regexp)
 
 ;;; Delete 
-;(global-set-key (kbd "C-d") 'kill-whole-line)
-;(global-set-key [delete] 'delete-char)
+(global-set-key (kbd "C-d") 'kill-whole-line)
+(global-set-key [delete] 'delete-char)
 
 ;;; Command on region
 (global-set-key (kbd "C-' C-'") 'shell-command-on-region)
@@ -318,7 +321,7 @@ Subsequent calls expands the selection to larger semantic unit."
           (forward-sexp)))
       (mark-sexp -1))))
 ;;todo rebind
-(global-set-key (kbd "M-8") 'extend-selection)
+(global-set-key (kbd "<f5>") 'extend-selection)
 
 (defun prefix-suffix-region (prefix suffix start end) 
   "Add a prefix and a suffix string to each line between mark and point." 
@@ -361,7 +364,7 @@ Subsequent calls expands the selection to larger semantic unit."
 
 ;;; Rectangles
 (global-set-key (kbd "C-' i") 'string-insert-rectangle)
-(global-set-key (kbd "C-' r") 'string-rectangle)
+;(global-set-key (kbd "C-' r") 'string-rectangle)
 (global-set-key (kbd "C-' o") 'open-rectangle)
 (global-set-key (kbd "C-' c") 'clear-rectangle)
 (global-set-key (kbd "C-' k") 'kill-rectangle)
@@ -405,14 +408,93 @@ Subsequent calls expands the selection to larger semantic unit."
                          ("SC"  . "http://joseito.republika.pl/sunrise-commander/")
                          ("MM" . "http://marmalade-repo.org/packages/")))
 
-(defun package-change-archive ()
-  "Changes the ELPA package archive"
+;; (defun package-change-archive ()
+;;   "Changes the ELPA package archive"
+;;   (interactive)
+;;   (save-excursion
+;;     (let* ((enable-recursive-minibuffers t)
+;;           (keys (car* package-archives))
+;;           (key (ido-completing-read "Archive: " keys nil t))
+;;           (archive (find-by-string-key key package-archives))
+;;           (url (cdr archive)))
+;;       (setq package-archive-base url)
+;;       (message "Changes package archive to %s" url)))) 
+
+;;; subword-mode
+(subword-mode 't)
+
+;;; Mark multiple mode
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/site-lisp/mark-multiple/"))
+
+(require 'inline-string-rectangle)
+(global-set-key (kbd "C-' r") 'inline-string-rectangle)
+(global-set-key (kbd "C-x r t") 'inline-string-rectangle)
+
+(require 'mark-more-like-this)
+;(global-set-key (kbd "M-S-'") 'mark-previous-like-this)
+;(global-set-key (kbd "M-'") 'mark-next-like-this)
+(global-set-key (kbd "M-'") 'mark-more-like-this) ; like the other two, but takes an argument (negative is previous)
+
+;; (require 'rename-sgml-tag)
+;; (define-key sgml-mode-map (kbd "C-c C-r") 'rename-sgml-tag)
+
+
+
+(defun expand-region-to-whole-lines ()
+  "Expand the region to make it encompass whole lines.
+If the region is not active, activate the current line."
   (interactive)
+  (if (not mark-active)
+      ;; Create region from current line
+      (progn 
+        (beginning-of-line)
+        (set-mark (point))
+        (end-of-line))
+    ;; The mark is active, expand region
+    (let ((beg (region-beginning))
+          (end (region-end)))
+      (goto-char beg)                  
+      (beginning-of-line)
+      (set-mark (point))
+      (goto-char end)
+      (unless (bolp) (end-of-line)))))
+
+(global-set-key (kbd "C-l") 'expand-region-to-whole-lines)
+
+;;; comments
+
+;; Original idea from
+;; http://www.opensubscriber.com/message/emacs-devel@gnu.org/10971693.html
+(defun comment-dwim-line (&optional arg)
+  "Replacement for the comment-dwim command.
+If no region is selected and current line is not blank and we are not at the end of the line,
+then comment current line.
+Replaces default behaviour of comment-dwim, when it inserts comment at the end of the line."
+  (interactive)
+  (comment-normalize-vars)
   (save-excursion
-    (let* ((enable-recursive-minibuffers t)
-          (keys (car* package-archives))
-          (key (ido-completing-read "Archive: " keys nil t))
-          (archive (find-by-string-key key package-archives))
-          (url (cdr archive)))
-      (setq package-archive-base url)
-      (message "Changes package archive to %s" url))))
+    (expand-region-to-whole-lines)
+    (comment-or-uncomment-region (region-beginning) (region-end))))
+
+(global-set-key (kbd "C-c C-c") 'comment-dwim-line)
+
+(delete-selection-mode 't)
+(transient-mark-mode nil)
+
+(defun toggle-visible-region ()
+  (interactive)
+  (if (region-active-p)
+      (deactivate-mark)
+    (activate-mark)))
+
+(global-set-key (kbd "<f6>") 'toggle-visible-region)
+
+(defun exchange-point-and-mark-preserve-selection () 
+  (interactive)
+  (if (region-active-p)
+      (progn
+        (exchange-point-and-mark)
+        (activate-mark))
+    (exchange-point-and-mark)))
+
+(global-set-key (kbd "C-x C-x") 'exchange-point-and-mark-preserve-selection)
