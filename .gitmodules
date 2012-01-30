@@ -1,0 +1,3 @@
+[submodule "expand-region"]
+	path = expand-region
+	url = https://github.com/magnars/expand-region.el.git

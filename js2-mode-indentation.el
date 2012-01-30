@@ -72,9 +72,6 @@
   (define-key js2-mode-map (kbd "C-d") 'kill-whole-line)
   (define-key js2-mode-map [delete] 'delete-char)
 
-  (require 'js2-rename-var)
-  (define-key js2-mode-map (kbd "C-c C-r") 'js2-rename-var)
-
   (if (featurep 'js2-highlight-vars)
       (js2-highlight-vars-mode))
   (message "j2-mode hook"))

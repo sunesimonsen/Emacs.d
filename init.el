@@ -302,26 +302,30 @@ START and END are buffer positions indicating what to append."
   (up-list arg))
 
 ;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
-(defun extend-selection (arg &optional incremental)
-  "Select the current word.
-Subsequent calls expands the selection to larger semantic unit."
-  (interactive (list (prefix-numeric-value current-prefix-arg)
-                     (or (and transient-mark-mode mark-active)
-                         (eq last-command this-command))))
-  (if incremental
-      (progn
-        (semnav-up (- arg))
-        (forward-sexp)
-        (mark-sexp -1))
-    (if (> arg 1)
-        (extend-selection (1- arg) t)
-      (if (looking-at "\\=\\(\\s_\\|\\sw\\)*\\_>")
-          (goto-char (match-end 0))
-        (unless (memq (char-before) '(?\) ?\"))
-          (forward-sexp)))
-      (mark-sexp -1))))
+;; (defun extend-selection (arg &optional incremental)
+;;   "Select the current word.
+;; Subsequent calls expands the selection to larger semantic unit."
+;;   (interactive (list (prefix-numeric-value current-prefix-arg)
+;;                      (or (and transient-mark-mode mark-active)
+;;                          (eq last-command this-command))))
+;;   (if incremental
+;;       (progn
+;;         (semnav-up (- arg))
+;;         (forward-sexp)
+;;         (mark-sexp -1))
+;;     (if (> arg 1)
+;;         (extend-selection (1- arg) t)
+;;       (if (looking-at "\\=\\(\\s_\\|\\sw\\)*\\_>")
+;;           (goto-char (match-end 0))
+;;         (unless (memq (char-before) '(?\) ?\"))
+;;           (forward-sexp)))
+;;       (mark-sexp -1))))
 ;;todo rebind
-(global-set-key (kbd "<f5>") 'extend-selection)
+;; (global-set-key (kbd "<f5>") 'extend-selection)
+
+(add-to-list 'load-path "~/.emacs.d/expand-region")
+(require 'expand-region)
+(global-set-key (kbd "<f5>") 'er/expand-region)
 
 (defun prefix-suffix-region (prefix suffix start end) 
   "Add a prefix and a suffix string to each line between mark and point." 
@@ -364,7 +368,7 @@ Subsequent calls expands the selection to larger semantic unit."
 
 ;;; Rectangles
 (global-set-key (kbd "C-' i") 'string-insert-rectangle)
-;(global-set-key (kbd "C-' r") 'string-rectangle)
+(global-set-key (kbd "C-' r") 'string-rectangle)
 (global-set-key (kbd "C-' o") 'open-rectangle)
 (global-set-key (kbd "C-' c") 'clear-rectangle)
 (global-set-key (kbd "C-' k") 'kill-rectangle)
@@ -380,7 +384,7 @@ Subsequent calls expands the selection to larger semantic unit."
   (set-mark-command 0))
 (global-set-key [(meta left)] 'jump-to-mark)
 
-(load (expand-file-name "~/.emacs.d/visible-mark.el"))
+;(load (expand-file-name "~/.emacs.d/visible-mark.el"))
 
 ;;; X Maximized
 (defun maximize-window (&optional f)
@@ -460,9 +464,6 @@ Replaces default behaviour of comment-dwim, when it inserts comment at the end o
     (comment-or-uncomment-region (region-beginning) (region-end))))
                                       
 (global-set-key (kbd "C-c C-c") 'comment-dwim-line)
-                                      
-(delete-selection-mode 't)            
-(transient-mark-mode nil)             
                                       
 (defun toggle-visible-region ()       
   (interactive)
