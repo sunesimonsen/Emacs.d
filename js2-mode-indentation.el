@@ -69,7 +69,7 @@
   (define-key js2-mode-map [(control d)] 'c-electric-delete-forward)
   (define-key js2-mode-map [(control meta q)] 'my-indent-sexp)
 
-  (define-key js2-mode-map (kbd "C-d") 'kill-whole-line)
+  (define-key js2-mode-map (kbd "C-d") 'kill-whole-lines)
   (define-key js2-mode-map [delete] 'delete-char)
 
   (if (featurep 'js2-highlight-vars)

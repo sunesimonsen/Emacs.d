@@ -38,11 +38,7 @@
 ; stop forcing me to spell out "yes"
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; I hate tabs!
-(setq-default indent-tabs-mode nil)
 (setq c-basic-indent 2)
-(setq tab-width 4)
-(setq sgml-basic-offset 4)
 
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
@@ -199,7 +195,25 @@ Then move to that line and indent accordning to mode"
 (global-set-key (kbd "C-o") 'open-line-below)
 
 ;;; Join 
-(global-set-key (kbd "C-x C-j") 'join-line)
+(defun join-lines-with (delimiter start end)
+  (interactive "sDelimiter: \nr")
+  (when (and transient-mark-mode mark-active)
+    (replace-string "\n" delimiter nil start end)
+    (end-of-line)))
+
+(defun join-lines ()
+  (interactive)
+  (if (not (and transient-mark-mode mark-active))
+      (join-line)
+
+    (expand-region-to-whole-lines)
+
+    (let* ((lines (count-lines (mark) (point))))
+      (dotimes (i (if (bolp) lines (1- lines)))
+        (join-line)))
+    (end-of-line)))
+
+(global-set-key (kbd "C-x C-j") 'join-lines)
 
 ;;; ETags
 (defun ido-find-file-in-tag-files ()
@@ -276,52 +290,22 @@ START and END are buffer positions indicating what to append."
 (global-set-key (kbd "M-f") 'query-replace-regexp)
 
 ;;; Delete 
-(global-set-key (kbd "C-d") 'kill-whole-line)
+(defun kill-whole-lines ()
+  (interactive)
+  (expand-region-to-whole-lines)
+  (if (< (point) (point-max))
+      (forward-char))
+  (kill-region (mark) (point)))
+
+(global-set-key (kbd "C-d") 'kill-whole-lines)
 (global-set-key [delete] 'delete-char)
 
 ;;; Command on region
 (global-set-key (kbd "C-' C-'") 'shell-command-on-region)
  
-;;; Navigatio
+;;; Navigation
 (global-set-key (kbd "C-<") 'end-of-buffer)
 (global-set-key (kbd "M-<") 'beginning-of-buffer)
-
-;;; Extend selection 
-;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
-(defun semnav-up (arg)
-  (interactive "p")
-  (when (nth 3 (syntax-ppss))
-    (if (> arg 0)
-        (progn
-          (skip-syntax-forward "^\"")
-          (goto-char (1+ (point)))
-          (decf arg))
-      (skip-syntax-backward "^\"")
-      (goto-char (1- (point)))
-      (incf arg)))
-  (up-list arg))
-
-;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
-;; (defun extend-selection (arg &optional incremental)
-;;   "Select the current word.
-;; Subsequent calls expands the selection to larger semantic unit."
-;;   (interactive (list (prefix-numeric-value current-prefix-arg)
-;;                      (or (and transient-mark-mode mark-active)
-;;                          (eq last-command this-command))))
-;;   (if incremental
-;;       (progn
-;;         (semnav-up (- arg))
-;;         (forward-sexp)
-;;         (mark-sexp -1))
-;;     (if (> arg 1)
-;;         (extend-selection (1- arg) t)
-;;       (if (looking-at "\\=\\(\\s_\\|\\sw\\)*\\_>")
-;;           (goto-char (match-end 0))
-;;         (unless (memq (char-before) '(?\) ?\"))
-;;           (forward-sexp)))
-;;       (mark-sexp -1))))
-;;todo rebind
-;; (global-set-key (kbd "<f5>") 'extend-selection)
 
 (add-to-list 'load-path "~/.emacs.d/expand-region")
 (require 'expand-region)
@@ -424,9 +408,6 @@ START and END are buffer positions indicating what to append."
 ;;       (setq package-archive-base url)
 ;;       (message "Changes package archive to %s" url)))) 
 
-;;; subword-mode
-(subword-mode 't)
-
 (defun expand-region-to-whole-lines ()
   "Expand the region to make it encompass whole lines.
 If the region is not active, activate the current line."
@@ -444,7 +425,7 @@ If the region is not active, activate the current line."
       (beginning-of-line)             
       (set-mark (point))              
       (goto-char end)                 
-      (unless (bolp) (end-of-line)))))
+      (end-of-line))))
                                       
 (global-set-key (kbd "C-l") 'expand-region-to-whole-lines)
                                       
@@ -482,3 +463,11 @@ Replaces default behaviour of comment-dwim, when it inserts comment at the end o
     (exchange-point-and-mark)))
 
 (global-set-key (kbd "C-x C-x") 'exchange-point-and-mark-preserve-selection)
+
+(defun isearch-in-other-window ()
+  (interactive)
+  (save-window-excursion
+    (other-window 1)
+    (isearch-forward)))
+
+(global-set-key (kbd "C-M-s") 'isearch-in-other-window)
