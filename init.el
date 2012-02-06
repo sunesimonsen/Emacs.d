@@ -346,9 +346,9 @@ START and END are buffer positions indicating what to append."
         (forward-line)
         (setq i (1+ i))))))
 
-(load (expand-file-name "~/.emacs.d/powerbuilder-mode.el"))
-(autoload 'powerbuilder-mode "powerbuilder-mode" "Power Builder mode." t)
-(setq auto-mode-alist (append '(("\\.\\(srw\\|sru\\|srm\\)$" . powerbuilder-mode)) auto-mode-alist))
+;; (load (expand-file-name "~/.emacs.d/powerbuilder-mode.el"))
+;; (autoload 'powerbuilder-mode "powerbuilder-mode" "Power Builder mode." t)
+;; (setq auto-mode-alist (append '(("\\.\\(srw\\|sru\\|srm\\)$" . powerbuilder-mode)) auto-mode-alist))
 
 ;;; Rectangles
 (global-set-key (kbd "C-' i") 'string-insert-rectangle)
@@ -471,3 +471,107 @@ Replaces default behaviour of comment-dwim, when it inserts comment at the end o
     (isearch-forward)))
 
 (global-set-key (kbd "C-M-s") 'isearch-in-other-window)
+
+(add-to-list 'load-path "~/.emacs.d/project-root")
+(require 'project-root)
+
+(setq project-roots
+      '(("Javascript Project"
+         :root-contains-files ("index.html")
+         :on-hit (lambda (p) 
+                   (make-variable-buffer-local
+                    (defvar project-root-find-file-string 
+                      '(name "*.css" "*.js" "*.html")
+                      "Files to search for in project"))
+                   (message (car p))))
+
+        ("Maven Project"
+         :root-contains-files ("pom.xml")
+         :on-hit (lambda (p) 
+                   (make-variable-buffer-local
+                    (defvar project-root-find-file-string 
+                      '(name "*.css" "*.java" "*.js" "*.html")
+                      "Files to search for in project"))
+                   (message (car p))))))
+
+
+(defun ido-project-root-find-file ()
+  "Use ido to select a file from the project."
+  (interactive)
+  (let (my-project-root project-files tbl)
+    (unless project-details (project-root-fetch))
+    (setq my-project-root (cdr project-details))
+    
+    (let ((command (concat "find "
+                    my-project-root
+                    " "
+                    (find-to-string
+                     `(and (prune (name ".svn" ".git" ".svn" "CVS" "target")) ,project-root-find-file-string  (type "f"))))))
+      (message command)
+      (setq project-files 
+            (split-string 
+             (shell-command-to-string command) "\n")))
+    
+    ;; populate hash table (display repr => path)
+    (setq tbl (make-hash-table :test 'equal))
+    (let (ido-list)
+      (mapc (lambda (path)
+              ;; format path for display in ido list
+              (setq key path)
+              ;; strip project root
+              (setq key (replace-regexp-in-string my-project-root "" key))
+              ;; remove trailing | or /
+              (setq key (replace-regexp-in-string "\\(|\\|/\\)$" "" key))
+              (puthash key path tbl)
+              (push key ido-list)
+              )
+            project-files
+            )
+      (find-file (gethash (ido-completing-read "project-files: " ido-list) tbl)))))
+
+(global-unset-key (kbd "C-p"))
+(global-set-key (kbd "C-p f") 'ido-project-root-find-file)
+(global-set-key (kbd "C-p g") 'project-root-grep)
+(global-set-key (kbd "C-p a") 'project-root-ack)
+(global-set-key (kbd "C-p d") 'project-root-goto-root)
+(global-set-key (kbd "C-p p") 'project-root-run-default-command)
+
+;; Escape strings
+(defun escape-lisp-string-region (start end)
+  "Escape special characters in the region as if a CL string.
+Inserts backslashes in front of special characters (namely backslash
+and double quote) in the region, according to the Common Lisp string
+escape requirements.
+
+Note that region should only contain the characters actually
+comprising the string, without the surrounding quotes."
+  (interactive "*r")
+  (save-excursion
+    (save-restriction
+      (narrow-to-region start end)
+      (goto-char start)
+      (while (search-forward "\\" nil t)
+        (replace-match "\\\\" nil t))
+      (goto-char start)
+      (while (search-forward "\"" nil t)
+        (replace-match "\\\"" nil t)))))
+
+
+(defun unescape-lisp-string-region (start end)
+  "Unescape special characters from the CL string specified by the region.
+This amounts to removing preceeding backslashes from the characters
+they escape.
+
+Note that region should only contain the characters actually
+comprising the string, without the surrounding quotes."
+  (interactive "*r")
+  (save-excursion
+    (save-restriction
+      (narrow-to-region start end)
+      (goto-char start)
+      (while (search-forward "\\" nil t)
+        (replace-match "" nil t)
+        (forward-char)))))
+
+;;; Repeat 
+(global-set-key (kbd "<f7>") 'repeat)

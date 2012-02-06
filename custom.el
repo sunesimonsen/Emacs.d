@@ -13,7 +13,7 @@
  '(menu-bar-mode t)
  '(scroll-bar-mode nil)
  '(scroll-conservatively 1000)
- '(scroll-margin 0)
+ '(scroll-margin 7)
  '(scroll-step 1)
  '(sgml-basic-offset 4)
  '(sr-listing-switches "-alh")
