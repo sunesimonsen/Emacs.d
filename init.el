@@ -65,7 +65,16 @@
 ;;; Color theme
 (require 'color-theme)
 (color-theme-initialize)
-(color-theme-billw)
+
+(defun light-theme ()
+  (interactive)
+  (color-theme-standard))
+
+(defun dark-theme ()
+  (interactive)
+  (color-theme-billw))
+
+(dark-theme)
 
 (put 'narrow-to-region 'disabled nil)
 
@@ -139,16 +148,9 @@ If point was already at that position, move point to beginning of line."
       (cons '("\\.\\(markdown\\|md\\)" . markdown-mode) auto-mode-alist))
 
 ;;; YASnippet
-;(setq yas/root-directory "~/.emacs.d/snippets")
-;(yas/load-directory yas/root-directory)
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 (require 'yasnippet) ;; not yasnippet-bundle
 (yas/global-mode t)
-
-;; Alternative yas expand
-(global-set-key (kbd "M-b") 'yas/expand)
-(global-set-key (kbd "C-i") 'indent-for-tab-command)
-
 
 ;;; Git grep 
 ;; There's something similar (but fancier) in vc-git.el: vc-git-grep
@@ -289,7 +291,7 @@ START and END are buffer positions indicating what to append."
 (global-set-key (kbd "C-f") 'query-replace)
 (global-set-key (kbd "M-f") 'query-replace-regexp)
 
-;;; Delete 
+;;; Delete - TODO kill last line
 (defun kill-whole-lines ()
   (interactive)
   (expand-region-to-whole-lines)
@@ -362,13 +364,13 @@ START and END are buffer positions indicating what to append."
 ;;; imenu
 (global-set-key [(meta menu)] 'imenu)
 
-;;; Marks
-(defun jump-to-mark ()
-  (interactive) 
-  (set-mark-command 0))
-(global-set-key [(meta left)] 'jump-to-mark)
+;;; Move
+(defun backward-same-syntax ()
+  (interactive)
+  (forward-same-syntax -1))
 
-;(load (expand-file-name "~/.emacs.d/visible-mark.el"))
+;(global-set-key [(meta right)] 'forward-same-syntax)
+;(global-set-key [(meta left)] 'backward-same-syntax)
 
 ;;; X Maximized
 (defun maximize-window (&optional f)
@@ -481,7 +483,7 @@ Replaces default behaviour of comment-dwim, when it inserts comment at the end o
          :on-hit (lambda (p) 
                    (make-variable-buffer-local
                     (defvar project-root-find-file-string 
-                      '(name "*.css" "*.js" "*.html")
+                      '(name "*.css" "*.js" "*.html" "*.properties")
                       "Files to search for in project"))
                    (message (car p))))
 
@@ -490,7 +492,7 @@ Replaces default behaviour of comment-dwim, when it inserts comment at the end o
          :on-hit (lambda (p) 
                    (make-variable-buffer-local
                     (defvar project-root-find-file-string 
-                      '(name "*.css" "*.java" "*.js" "*.html")
+                      '(name "*.css" "*.java" "*.js" "*.html" "*.properties")
                       "Files to search for in project"))
                    (message (car p))))))
 
@@ -575,3 +577,51 @@ comprising the string, without the surrounding quotes."
 
 ;;; Repeat 
 (global-set-key (kbd "<f7>") 'repeat)
+
+;;; iy-go-to-char
+
+(require 'iy-go-to-char)
+
+(global-set-key (kbd "M-n") 'iy-go-to-char-backward)
+(global-set-key (kbd "M-m") 'iy-go-to-char)
+; (global-set-key (kbd "C-c ;") 'iy-go-to-char-continue)
+; (global-set-key (kbd "C-c ,") 'iy-go-to-char-continue-backward)
+
+(defun move-forward-to-paren (&optional arg)
+  "Move forward to next \", (, [, or { and place the point after it."
+  (interactive)
+  (while (in-string-p)
+    (re-search-forward "\""))
+  (re-search-forward "\\s(\\|\"" nil 'end-of-buffer))
+
+(defun move-backward-to-paren (&optional arg)
+  "Move backward to previous \", (, [, or { and place the point after it."
+  (interactive)
+  (backward-char 1)
+  (re-search-backward "\\s(\\|\"" nil 'beginning-of-buffer)
+  (while (and (looking-at "\"") (in-string-p))
+      (re-search-backward "\""))
+  (forward-char 1)) 
+
+(global-set-key [(meta right)] 'move-forward-to-paren)
+(global-set-key [(meta left)] 'move-backward-to-paren)
+
+(defun move-forward-to-brace (&optional arg)
+  "Move forward to next { and place the point after it."
+  (interactive)
+  (search-forward "{" nil 'end-of-buffer)
+  (while (in-string-p)
+    (search-forward "{" nil 'end-of-buffer)))
+
+(defun move-backward-to-brace (&optional arg)
+  "Move backward to previous { and place the point after it."
+  (interactive)
+  (backward-char 2)
+  (search-backward "{" nil 'beginning-of-buffer)
+  (while (in-string-p)
+    (search-backward "{" nil 'beginning-of-buffer))
+  (if (not (bobp))
+      (forward-char 1))) 
+
+(global-set-key [(meta down)] 'move-forward-to-brace)
+(global-set-key [(meta up)] 'move-backward-to-brace)

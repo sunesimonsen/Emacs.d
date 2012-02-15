@@ -9,6 +9,8 @@
  '(global-subword-mode t)
  '(hl-paren-colors (quote ("green" "yellow" "magenta" "orange")))
  '(indent-tabs-mode nil)
+ '(iy-go-to-char-key-backward 59)
+ '(iy-go-to-char-key-forward 44)
  '(js2-bounce-indent-p t)
  '(menu-bar-mode t)
  '(scroll-bar-mode nil)
@@ -25,7 +27,9 @@
  '(visible-bell nil)
  '(x-select-enable-clipboard t)
  '(yank-pop-change-selection t)
- '(yas/prompt-functions (quote (yas/ido-prompt yas/x-prompt yas/dropdown-prompt yas/completing-prompt yas/no-prompt))))
+ '(yas/prompt-functions (quote (yas/ido-prompt yas/x-prompt yas/dropdown-prompt yas/completing-prompt yas/no-prompt)))
+ '(yas/snippet-dirs (quote ("~/.emacs.d/snippets" "~/.emacs.d/yasnippet/snippets")) nil (yasnippet))
+ '(yas/trigger-key "M-b"))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
